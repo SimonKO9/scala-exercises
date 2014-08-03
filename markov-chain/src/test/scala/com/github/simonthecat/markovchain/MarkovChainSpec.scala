@@ -45,5 +45,12 @@ class MarkovChainSpec extends Specification {
       markov2.next(Seq("cat")) mustEqual None
       markov2.next(Seq()) mustEqual None
     }
+
+    "correctly generate same text for simple text" in {
+      val textSeq = "Simon the cat writes Scala code".split(' ').toSeq
+
+      val markov2 = MarkovChain(textSeq, 2)
+      markov2.generate(textSeq.take(2), 10) mustEqual textSeq
+    }
   }
 }
