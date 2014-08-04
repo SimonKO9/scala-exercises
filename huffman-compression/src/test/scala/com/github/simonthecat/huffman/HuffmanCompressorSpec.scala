@@ -11,7 +11,7 @@ class HuffmanCompressorSpec extends Specification {
    */
   def simpleWordToFreqTree(str: String): FrequencyTree = {
     val charList = str.toCharArray.toSet.toList // so we're sure no duplicates exist
-    val charsWithIntIndices =charList.zipWithIndex
+    val charsWithIntIndices = charList.zipWithIndex
     val charsWithNaiveFrequencies = charsWithIntIndices.map {
       case (char, intValue) => (char, intValue.toDouble)
     }
@@ -41,6 +41,19 @@ class HuffmanCompressorSpec extends Specification {
       huffman.compress("aaa") === "LLL"
       huffman.compress("bbb") === "RRR"
       huffman.compress("abab") === "LRLR"
+    }
+
+    "work for custom output transformer" in {
+      val zeroOneListTransformer: (Seq[Decision]) => List[Int] = { decisions =>
+        decisions.map {
+          case Left => 0
+          case Right => 1
+        }.toList
+      }
+      val tree = simpleWordToFreqTree("ab")
+      val huffman = HuffmanCompressor(tree, zeroOneListTransformer)
+
+      huffman.compress("abba") === List(0, 1, 1, 0)
     }
   }
 }

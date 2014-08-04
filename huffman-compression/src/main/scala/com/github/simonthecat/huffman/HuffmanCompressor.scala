@@ -1,13 +1,13 @@
 package com.github.simonthecat.huffman
 
 
+sealed trait Decision
+
+case object Left extends Decision
+
+case object Right extends Decision
+
 abstract class HuffmanCompressor[T](freqTree: FrequencyTree) {
-
-  sealed trait Decision
-
-  case object Left extends Decision
-
-  case object Right extends Decision
 
   def compress(chars: Seq[Char]) = {
     def compress0(char: Char, tree: FrequencyTree): Seq[Decision] = tree match {
@@ -29,8 +29,15 @@ abstract class HuffmanCompressor[T](freqTree: FrequencyTree) {
 }
 
 object HuffmanCompressor {
-  def apply(freqTree: FrequencyTree) = new HuffmanCompressor[String](freqTree) {
-    override def output(decisions: Seq[Decision]): String = decisions.map {
+  def apply(freqTree: FrequencyTree): HuffmanCompressor[String] = apply(freqTree, defaultStringTransformer)
+
+  def apply[T](freqTree: FrequencyTree, outputTransformer: (Seq[Decision]) => T): HuffmanCompressor[T] =
+    new HuffmanCompressor[T](freqTree) {
+      override protected def output(decisions: Seq[Decision]): T = outputTransformer(decisions)
+    }
+
+  private val defaultStringTransformer: (Seq[Decision] => String) = { decisions =>
+    decisions.map {
       case Left => "L"
       case Right => "R"
     }.mkString
