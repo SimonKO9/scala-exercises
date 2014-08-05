@@ -2,7 +2,7 @@ package com.github.simonthecat.huffman
 
 import org.specs2.mutable._
 
-class HuffmanCompressorSpec extends Specification {
+class HuffmanEncoderSpec extends Specification {
   /**
    * Simple function that creates freq tree from word, following rule:
    * subsequent chars are assigned frequency equal to their index
@@ -18,29 +18,29 @@ class HuffmanCompressorSpec extends Specification {
     FrequencyTree(charsWithNaiveFrequencies)
   }
 
-  "Default HuffmanCompressor" should {
+  "HuffmanEncoder" should {
     "fail for letter not covered by freq tree" in {
       val tree = simpleWordToFreqTree("ab")
-      val huffman = HuffmanCompressor(tree)
+      val huffman = HuffmanEncoder(tree)
 
-      huffman.compress("c") must throwAn[IllegalArgumentException]
+      huffman.encode("c") must throwAn[IllegalArgumentException]
     }
 
-    "compress single letter covered by freq tree" in {
+    "encode single letter covered by freq tree" in {
       val tree = simpleWordToFreqTree("ab")
-      val huffman = HuffmanCompressor(tree)
+      val huffman = HuffmanEncoder(tree)
 
-      huffman.compress("a") === "L"
-      huffman.compress("b") === "R"
+      huffman.encode("a") === "L"
+      huffman.encode("b") === "R"
     }
 
-    "compress multiple letters covered by freq tree" in {
+    "encode multiple letters covered by freq tree" in {
       val tree = simpleWordToFreqTree("ab")
-      val huffman = HuffmanCompressor(tree)
+      val huffman = HuffmanEncoder(tree)
 
-      huffman.compress("aaa") === "LLL"
-      huffman.compress("bbb") === "RRR"
-      huffman.compress("abab") === "LRLR"
+      huffman.encode("aaa") === "LLL"
+      huffman.encode("bbb") === "RRR"
+      huffman.encode("abab") === "LRLR"
     }
 
     "work for custom output transformer" in {
@@ -51,9 +51,9 @@ class HuffmanCompressorSpec extends Specification {
         }.toList
       }
       val tree = simpleWordToFreqTree("ab")
-      val huffman = HuffmanCompressor(tree, zeroOneListTransformer)
+      val huffman = HuffmanEncoder(tree, zeroOneListTransformer)
 
-      huffman.compress("abba") === List(0, 1, 1, 0)
+      huffman.encode("abba") === List(0, 1, 1, 0)
     }
   }
 }
